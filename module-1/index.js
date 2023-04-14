@@ -241,3 +241,34 @@ function transferWaitors(data) {
 }
 
 console.log(transferWaitors(restorantData));
+
+function isPangram(string) {
+  const aplhabet = 'abcdefghijklmnopqrstuvwxyz';
+  let isTrue;
+
+  for (let i = 0; i < aplhabet.length; i++) {
+    if (!string.includes(aplhabet[i])) {
+      isTrue = false;
+    }
+    else {
+     isTrue = true;
+    }
+  }
+
+  return isTrue;
+}
+console.log(isPangram('The quick brown fox jumps over the lazy dog'));
+
+function deepCount(a) {
+  let length = a.length;
+
+  for (let element of a) {
+    if (Array.isArray(element)) {
+       length += deepCount(element);
+    }
+  }
+
+  return length;
+}
+
+console.log(deepCount([[[[[[[[[]]]]]]]]]));
