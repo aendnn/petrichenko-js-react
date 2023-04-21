@@ -187,18 +187,19 @@ function closeModal() {
 // menu
 
 class Menu {
-  constructor(photo, alt, title, descr, price, wrapper) {
+  constructor(photo, alt, title, descr, price, wrapper, ...classes) {
     this.photo = photo;
     this.alt = alt;
     this.title = title;
     this.descr = descr;
     this.price = price;
+    this.classes = classes.length === 0 ? ['menu__item'] : classes;
     this.wrapper = wrapper;
   }
 
   createCard() {
     const card = document.createElement('div');
-    card.className = 'menu__item';
+    this.classes.forEach(className => card.classList.add(className));
 
     const img = document.createElement('img');
     img.src = this.photo;
