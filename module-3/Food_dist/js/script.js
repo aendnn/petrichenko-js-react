@@ -115,3 +115,158 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setTimer('.timer', deadline);
 });
+
+// modal
+
+const btns = document.querySelectorAll('[data-modal]');
+const modal = document.querySelector('.modal');
+const closeBtns = document.querySelectorAll('.modal__close');
+// const modalTimeout = setTimeout(showModal, 3000);
+
+btns.forEach((btn) => {
+  btn.addEventListener('click', btnClickHandler);
+});
+
+function btnClickHandler() {
+  showModal();
+}
+
+function closeBtnClickHandler() {
+  closeModal();
+}
+
+function clickOutsideHandler(evt) {
+  const target = evt.target;
+
+  if (target && target === modal) {
+    closeModal();
+  }
+}
+
+function keyDownHandler(evt) {
+  if (evt.code === 'Escape') {
+    closeModal();
+  }
+}
+
+window.addEventListener('scroll', verticalScrollHandler);
+
+function verticalScrollHandler() {
+  if (window.pageYOffset
+     + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+    showModal();
+  }
+}
+
+function showModal() {
+  modal.classList.toggle('modal__active');
+  document.body.style.overflow = 'hidden';
+
+  closeBtns.forEach((btn) => {
+    btn.addEventListener('click', closeBtnClickHandler);
+  });
+
+  modal.addEventListener('click', clickOutsideHandler);
+
+  document.addEventListener('keydown', keyDownHandler);
+}
+
+function closeModal() {
+  modal.classList.remove('modal__active');
+  document.body.style.overflow = 'auto';
+  clearInterval(modalTimeout);
+
+  closeBtns.forEach(btn => {
+    btn.removeEventListener('click', closeBtnClickHandler);
+  });
+
+  modal.removeEventListener('click', clickOutsideHandler);
+  document.removeEventListener('keydown', keyDownHandler);
+}
+
+// menu
+
+class Menu {
+  constructor(photo, alt, title, descr, price, wrapper) {
+    this.photo = photo;
+    this.alt = alt;
+    this.title = title;
+    this.descr = descr;
+    this.price = price;
+    this.wrapper = wrapper;
+  }
+
+  createCard() {
+    const card = document.createElement('div');
+    card.className = 'menu__item';
+
+    const img = document.createElement('img');
+    img.src = this.photo;
+    img.alt = this.alt;
+
+    const title = document.createElement('h3');
+    title.className = 'menu__item-subtitle';
+    title.innerText = this.title;
+
+    const descr = document.createElement('div');
+    descr.className = 'menu__item-descr';
+    descr.textContent = this.descr;
+
+    const divider = document.createElement('div');
+    divider.className = 'menu__item-divider';
+
+    const priceWrap = document.createElement('div');
+    priceWrap.className = 'menu__item-price';
+
+    const priceText = document.createElement('div');
+    priceText.className = 'menu__item-cost';
+    priceText.innerText = 'Цена: ';
+
+    const priceCount = document.createElement('div');
+    priceCount.className = 'menu__item-total';
+    priceCount.innerText = ' грн/день';
+
+    const priceTotal = document.createElement('span');
+    priceTotal.innerText = this.price;
+    priceCount.prepend(priceTotal);
+
+    card.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(descr);
+    card.appendChild(divider);
+    priceWrap.appendChild(priceText);
+    priceWrap.appendChild(priceCount);
+    card.appendChild(priceWrap);
+
+    const menu = document.querySelector(this.wrapper);
+
+    menu.appendChild(card);
+  }
+}
+
+new Menu(
+  'img/tabs/vegy.jpg',
+  'vegy',
+  'Меню "Фитнес"',
+  'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+  229,
+  '.menu__field .container',
+).createCard();
+
+new Menu(
+  'img/tabs/elite.jpg',
+  'elite',
+  'Меню “Премиум”',
+  'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+  550,
+  '.menu__field .container',
+).createCard();
+
+new Menu(
+  'img/tabs/post.jpg',
+  'post',
+  'Меню "Постное"',
+  'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+  430,
+  '.menu__field .container',
+).createCard();
