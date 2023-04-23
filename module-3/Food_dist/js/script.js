@@ -271,3 +271,59 @@ new Menu(
   430,
   '.menu__field .container',
 ).createCard();
+
+// send forms
+
+const forms = document.querySelectorAll('form');
+
+const messages = {
+  loading: 'Загрузка',
+  success: 'Все супер!',
+  error: 'Произошла ошибка',
+};
+
+forms.forEach(form => {
+  form.addEventListener('submit', formSubmitHandler);
+});
+
+function formSubmitHandler(evt) {
+  evt.preventDefault();
+  sendForm(this);
+}
+
+function sendForm(form) {
+  const request = new XMLHttpRequest();
+  request.open('POST', 'php/sender.php');
+
+  // json data 
+  request.setRequestHeader('Content-type', 'application/json');
+  const formData = new FormData(form);
+
+  const obj = {};
+
+  formData.forEach((value, key) => {
+    obj[key] = value;
+  });
+
+  const json = JSON.stringify(obj);
+
+  request.send(json);
+
+  const message = document.createElement('p');
+  message.textContent = messages.loading;
+  form.append(message);
+
+  request.addEventListener('load', statusHandler);
+
+  function statusHandler() {
+    if (request.status === 200) {
+      message.textContent = messages.success;
+      form.reset();
+      setTimeout(() => {
+        message.remove();
+      }, 2000);
+    } else {
+      message.textContent = messages.error;
+    }
+  }
+}
