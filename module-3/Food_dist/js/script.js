@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const btns = document.querySelectorAll('[data-modal]');
 const modal = document.querySelector('.modal');
-const closeBtns = document.querySelectorAll('.modal__close');
 // const modalTimeout = setTimeout(showModal, 3000);
 
 btns.forEach((btn) => {
@@ -131,14 +130,10 @@ function btnClickHandler() {
   showModal();
 }
 
-function closeBtnClickHandler() {
-  closeModal();
-}
-
 function clickOutsideHandler(evt) {
   const target = evt.target;
 
-  if (target && target === modal) {
+  if (target && target === modal || target.className === 'modal__close') {
     closeModal();
   }
 }
@@ -162,10 +157,6 @@ function showModal() {
   modal.classList.toggle('modal__active');
   document.body.style.overflow = 'hidden';
 
-  closeBtns.forEach((btn) => {
-    btn.addEventListener('click', closeBtnClickHandler);
-  });
-
   modal.addEventListener('click', clickOutsideHandler);
 
   document.addEventListener('keydown', keyDownHandler);
@@ -175,10 +166,6 @@ function closeModal() {
   modal.classList.remove('modal__active');
   document.body.style.overflow = 'auto';
   clearInterval(modalTimeout);
-
-  closeBtns.forEach(btn => {
-    btn.removeEventListener('click', closeBtnClickHandler);
-  });
 
   modal.removeEventListener('click', clickOutsideHandler);
   document.removeEventListener('keydown', keyDownHandler);
@@ -277,7 +264,7 @@ new Menu(
 const forms = document.querySelectorAll('form');
 
 const messages = {
-  loading: 'Загрузка',
+  loading: 'img/spinner.svg',
   success: 'Все супер!',
   error: 'Произошла ошибка',
 };
@@ -309,21 +296,44 @@ function sendForm(form) {
 
   request.send(json);
 
-  const message = document.createElement('p');
-  message.textContent = messages.loading;
-  form.append(message);
+  const message = document.createElement('img');
+  message.src = messages.loading;
+  message.classList.add('img-spinner');
+  form.insertAdjacentElement('afterend', message);
 
   request.addEventListener('load', statusHandler);
 
   function statusHandler() {
     if (request.status === 200) {
-      message.textContent = messages.success;
+      console.log(request.response);
+      createStatusModal(messages.success);
+      message.remove();
       form.reset();
-      setTimeout(() => {
-        message.remove();
-      }, 2000);
     } else {
-      message.textContent = messages.error;
+      createStatusModal(messages.error);
     }
   }
+}
+
+function createStatusModal(message) {
+  const activeModal = document.querySelector('.modal__dialog');
+
+  activeModal.classList.add('hide');
+  showModal();
+
+  const newModal = document.createElement('div');
+  newModal.classList.add('modal__dialog');
+  newModal.innerHTML = `
+    <div class="modal__content">
+      <div class="modal__close">x</div>
+      <div class="modal__title">${message}</div>
+    </div>
+  `;
+
+  modal.append(newModal);
+  setTimeout(() => {
+    newModal.remove();
+    activeModal.classList.remove('hide');
+    closeModal();
+  }, 4000);
 }
