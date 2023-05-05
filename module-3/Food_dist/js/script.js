@@ -278,41 +278,57 @@ function formSubmitHandler(evt) {
   sendForm(this);
 }
 
-function sendForm(form) {
-  const request = new XMLHttpRequest();
-  request.open('POST', 'php/sender.php');
+const getResource = async (url) => {
+  const request = await fetch(url);
 
-  // json data 
-  request.setRequestHeader('Content-type', 'application/json');
-  const formData = new FormData(form);
+  if (!request.ok) {
+    throw new Error(`Произошла ошибка! Статус ошибки: ${request.status}`);
+  }
 
-  const obj = {};
+  return await request.json();
+};
 
-  formData.forEach((value, key) => {
-    obj[key] = value;
+getResource('http://localhost:3000/menu')
+  .then(data => {
+    data.forEach(({ img, alt, title, descr, price }) => new Menu(img, alt, title, descr, price, '.menu__field .container').createCard());
   });
 
-  const json = JSON.stringify(obj);
+const sendRequest = async (url, data) => {
+  const request = await fetch(url, {
+    method: "POST",
+    body: data,
+    headers: {
+      'Content-type': 'application/json'
+    },
+  });
 
-  request.send(json);
+  return await request.json();
+};
+
+function sendForm(form) {
+  const formData = new FormData(form);
+
+  const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
+  console.log(json);
+
+  sendRequest('http://localhost:3000/requests', json)
+    .then(data => {
+      console.log(data);
+      createStatusModal(messages.success);
+      message.remove();
+    })
+    .catch(() => {
+      createStatusModal(messages.error);
+    })
+    .finally(() => {
+      form.reset();
+    });
 
   const message = document.createElement('img');
   message.src = messages.loading;
   message.classList.add('img-spinner');
   form.insertAdjacentElement('afterend', message);
-
-  request.addEventListener('load', statusHandler);
-
-  function statusHandler() {
-    if (request.status === 200) {
-      console.log(request.response);
-      createStatusModal(messages.success);
-      message.remove();
-      form.reset();
-    } else {
-      createStatusModal(messages.error);
-    }
-  }
 }
 
 function createStatusModal(message) {
