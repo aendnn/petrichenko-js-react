@@ -232,33 +232,6 @@ class Menu {
   }
 }
 
-new Menu(
-  'img/tabs/vegy.jpg',
-  'vegy',
-  'Меню "Фитнес"',
-  'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-  229,
-  '.menu__field .container',
-).createCard();
-
-new Menu(
-  'img/tabs/elite.jpg',
-  'elite',
-  'Меню “Премиум”',
-  'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-  550,
-  '.menu__field .container',
-).createCard();
-
-new Menu(
-  'img/tabs/post.jpg',
-  'post',
-  'Меню "Постное"',
-  'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-  430,
-  '.menu__field .container',
-).createCard();
-
 // send forms
 
 const forms = document.querySelectorAll('form');
@@ -278,32 +251,32 @@ function formSubmitHandler(evt) {
   sendForm(this);
 }
 
-const getResource = async (url) => {
-  const request = await fetch(url);
+// const getResource = async (url) => {
+//   const request = await fetch(url);
 
-  if (!request.ok) {
-    throw new Error(`Произошла ошибка! Статус ошибки: ${request.status}`);
-  }
+//   if (!request.ok) {
+//     throw new Error(`Произошла ошибка! Статус ошибки: ${request.status}`);
+//   }
 
-  return await request.json();
-};
+//   return await request.json();
+// };
 
-getResource('http://localhost:3000/menu')
-  .then(data => {
-    data.forEach(({ img, alt, title, descr, price }) => new Menu(img, alt, title, descr, price, '.menu__field .container').createCard());
-  });
+// getResource('http://localhost:3000/menu')
+//   .then(data => {
+//     data.forEach(({ img, alt, title, descr, price }) => new Menu(img, alt, title, descr, price, '.menu__field .container').createCard());
+//   });
 
-const sendRequest = async (url, data) => {
-  const request = await fetch(url, {
-    method: "POST",
-    body: data,
-    headers: {
-      'Content-type': 'application/json'
-    },
-  });
+// const sendRequest = async (url, data) => {
+//   const request = await fetch(url, {
+//     method: "POST",
+//     body: data,
+//     headers: {
+//       'Content-type': 'application/json'
+//     },
+//   });
 
-  return await request.json();
-};
+//   return await request.json();
+// };
 
 function sendForm(form) {
   const formData = new FormData(form);
@@ -353,3 +326,53 @@ function createStatusModal(message) {
     closeModal();
   }, 4000);
 }
+
+// slider
+const current = document.querySelector('#current');
+const total = document.querySelector('#total');
+const prev = document.querySelector('.offer__slider-prev');
+const next = document.querySelector('.offer__slider-next');
+const slides = document.querySelectorAll('.offer__slide');
+
+total.textContent = `0${slides.length}`;
+
+slides.forEach((slide, index) => {
+  if (slide.classList.contains('offer__slide--active')) {
+    current.textContent = `0${index + 1}`;
+  }
+});
+
+function clickPrevSliderArrow() {
+  if (current.textContent !== '01') {
+    current.textContent = `0${parseInt(current.textContent, 10) - 1}`;
+  } else {
+    current.textContent = `0${parseInt(total.textContent, 10)}`;
+  }
+
+  slides.forEach((item, i, arr) => {
+    if (item.classList.contains('offer__slide--active')) {
+      item.classList.remove('offer__slide--active');
+
+      arr[parseInt(current.textContent, 10) - 1].classList.add('offer__slide--active');
+    }
+  });
+}
+
+function clickNextSliderArrow() {
+  if (current.textContent !== total.textContent) {
+    current.textContent = `0${parseInt(current.textContent, 10) + 1}`;
+  } else {
+    current.textContent = '01';
+  }
+
+  slides.forEach((item, i, arr) => {
+    if (item.classList.contains('offer__slide--active')) {
+      item.classList.remove('offer__slide--active');
+
+      arr[parseInt(current.textContent, 10) - 1].classList.add('offer__slide--active');
+    }
+  });
+}
+
+prev.addEventListener('click', clickPrevSliderArrow);
+next.addEventListener('click', clickNextSliderArrow);
