@@ -334,7 +334,11 @@ const prev = document.querySelector('.offer__slider-prev');
 const next = document.querySelector('.offer__slider-next');
 const slides = document.querySelectorAll('.offer__slide');
 
-total.textContent = `0${slides.length}`;
+if (slides.length >= 10) {
+  total.textContent = slides.length;
+} else {
+  total.textContent = `0${slides.length}`;
+}
 
 slides.forEach((slide, index) => {
   if (slide.classList.contains('offer__slide--active')) {
@@ -343,10 +347,18 @@ slides.forEach((slide, index) => {
 });
 
 function clickPrevSliderArrow() {
-  if (current.textContent !== '01') {
-    current.textContent = `0${parseInt(current.textContent, 10) - 1}`;
+  if (parseInt(current.textContent, 10) > 1) {
+    if (parseInt(current.textContent, 10) > 10) {
+      current.textContent = parseInt(current.textContent, 10) - 1;
+    } else {
+      current.textContent = `0${parseInt(current.textContent, 10) - 1}`;
+    }
   } else {
-    current.textContent = `0${parseInt(total.textContent, 10)}`;
+    if (slides.length >= 10) {
+      current.textContent = slides.length;
+    } else {
+      current.textContent = `0${slides.length}`;
+    }
   }
 
   slides.forEach((item, i, arr) => {
@@ -359,8 +371,12 @@ function clickPrevSliderArrow() {
 }
 
 function clickNextSliderArrow() {
-  if (current.textContent !== total.textContent) {
-    current.textContent = `0${parseInt(current.textContent, 10) + 1}`;
+  if (parseInt(current.textContent, 10) < total.textContent) {
+    if (parseInt(current.textContent, 10) >= 9) {
+      current.textContent = parseInt(current.textContent, 10) + 1;
+    } else {
+      current.textContent = `0${parseInt(current.textContent, 10) + 1}`;
+    }
   } else {
     current.textContent = '01';
   }
